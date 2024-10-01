@@ -25,8 +25,7 @@ void Cadastrar(struct Livro li[], int *qtd){
     cin.getline(li[*qtd].titulo, 100);
 
     cout << "Autor: ";
-    cin.ignore();
-    cin.getline(li[*qtd].autor, 100); // Erro: ignorando a primeira letra de todo nome de autor
+    cin.getline(li[*qtd].autor, 100);
 
     cout << "Numero de Paginas: ";
     cin >> li[*qtd].numPag;
@@ -66,11 +65,13 @@ void MostraLivros(struct Livro li[], int qtd){
 
 void BuscarLivro(struct Livro li[], int qtd){
     system("cls");
+    bool encontrado = false;
     int ID = 0;
-    cout << "Digite o ID do livro: " << endl;
+    cout << "Digite o ID do livro: ";
     cin >> ID;
 
-    for (int i=0; i<qtd; i++){ // Erro: Ao adicionar dois livros e buscar pelo ID do segundo. Ele cai no else sendo que o livro esta cadastrado1
+    for (int i=0; i<qtd; i++){
+
         if (li[i].codigoUnico == ID){
             cout << "Titulo: " << li[i].titulo << endl;
             cout << "Autor: " << li[i].autor << endl;
@@ -80,14 +81,10 @@ void BuscarLivro(struct Livro li[], int qtd){
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
             cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
             cout << "-------------------------------------------------------------\n";
-            break;
-        }
-        else {
-            cout << "Livro nao encontrado!" << endl;
-            cout << "-------------------------------------------------------------\n";
-            break;
+            bool encontrado = true;
         }
     }
+    if (encontrado) cout << "Livro nao encontrado!" << endl;
 }
 
 //3. Empréstimo de livros:
@@ -106,9 +103,14 @@ void EmprestimoLivro(struct Livro li[], int qtd){
     for (int i = 0; i < qtd; i++){
         if (strcmp(livro,li[i].titulo) && li[i].qtdDisponivel > 0){
                 li[i].qtdDisponivel -= 1;
-                strcpy(li[i].pessoasComExemplares, nome);
-                cout << "Livro Emprestado!" << endl;
-                break;
+            // Verifica se já há algum nome registrado e concatena
+            if (strlen(li[i].pessoasComExemplares) > 0) {
+                strcat(li[i].pessoasComExemplares, ", ");
+            }
+            strcat(li[i].pessoasComExemplares, nome);
+
+            cout << "Livro Emprestado!" << endl;
+            break;
 
         }else {
             cout << "Nao Possuimos este Livro!" << endl;
