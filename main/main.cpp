@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+Lucas de Campos Ranzani 24004942
+*/
+
 using namespace std;
 
 struct Livro {
@@ -12,12 +16,14 @@ struct Livro {
     int anoPublicacao;
     int codigoUnico;
     int qtdDisponivel;
-    char pessoasComExemplares[100];
+    int qtdEmprestada;
+    char pessoasComExemplares[10][100];
 };
 
 // 1. Cadastro de livros:
 void Cadastrar(struct Livro li[], int *qtd){
     system("cls");
+    int codigo;
     cout << "Cadastrar livros: " << endl;
 
     cout << "Titulo: ";
@@ -34,14 +40,20 @@ void Cadastrar(struct Livro li[], int *qtd){
     cin >> li[*qtd].anoPublicacao;
 
     cout << "codigo unico: ";
-    cin >> li[*qtd].codigoUnico;
+    cin >> codigo;
+    // ERRO: a lógica ta certa nessa porra mas não funciona nem fundendo desitir precisor fazer outras coias
+    /*
+    int i = 0;
+    while (codigo == li[i].codigoUnico){
+        cout << "Codigo unico ja existente! Tente novamente\nCodigo unico: ";
+        cin >> codigo;
+        i++;
+    }
+    */
+    li[*qtd].codigoUnico = codigo;
 
     cout << "Quantidade disponivel: ";
     cin >> li[*qtd].qtdDisponivel;
-
-    cout << "Nome das pessoas que estao com exemplares: ";
-    cin.ignore();
-    cin.getline(li[*qtd].pessoasComExemplares, 100);
 
     cout << "-------------------------------------------------------------\n";
 
@@ -58,7 +70,10 @@ void MostraLivros(struct Livro li[], int qtd){
         cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
         cout << "Codigo Unico: " << li[i].codigoUnico << endl;
         cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-        cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+        for (int j = 0; j < qtd; j++) {
+            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+            break;
+        }
         cout << "-------------------------------------------------------------\n";
     }
 }
@@ -79,9 +94,13 @@ void BuscarLivro(struct Livro li[], int qtd){
             cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
             cout << "Codigo Unico: " << li[i].codigoUnico << endl;
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+            for (int j = 0; j < qtd; j++) {
+               cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+               break;
+            }
             cout << "-------------------------------------------------------------\n";
             bool encontrado = true;
+            return;
         }
     }
     if (encontrado) cout << "Livro nao encontrado!" << endl;
@@ -101,14 +120,16 @@ void EmprestimoLivro(struct Livro li[], int qtd){
     cin.getline(livro, 50);
 
     for (int i = 0; i < qtd; i++){
-        if (strcmp(livro,li[i].titulo) && li[i].qtdDisponivel > 0){
-                li[i].qtdDisponivel -= 1;
+        if (strcmp(livro, li[i].titulo) && li[i].qtdDisponivel > 0){
+            li[i].qtdDisponivel -= 1;
+            li[i].qtdEmprestada += 1;
             // Verifica se já há algum nome registrado e concatena
-            if (strlen(li[i].pessoasComExemplares) > 0) {
-                strcat(li[i].pessoasComExemplares, ", ");
+            for (int j = 0; j < qtd; j++){
+                if (strlen(li[i].pessoasComExemplares[j]) > 0) {
+                    strcat(li[i].pessoasComExemplares[j], ", ");
+                }
+                strcat(li[i].pessoasComExemplares[j], nome);
             }
-            strcat(li[i].pessoasComExemplares, nome);
-
             cout << "Livro Emprestado!" << endl;
             break;
 
@@ -118,9 +139,7 @@ void EmprestimoLivro(struct Livro li[], int qtd){
             break;
         }
     }
-
 }
-
 
 int main()
 {
