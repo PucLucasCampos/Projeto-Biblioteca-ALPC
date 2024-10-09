@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstdio>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 
@@ -13,14 +15,17 @@ struct Livro {
     char pessoasComExemplares[100];
 };
 
+// 1. Cadastro de livros:
 void Cadastrar(struct Livro li[], int *qtd){
+    system("cls");
     cout << "Cadastrar livros: " << endl;
 
     cout << "Titulo: ";
-    fgets(li[*qtd].titulo, 100, stdin);
+    cin.ignore();
+    cin.getline(li[*qtd].titulo, 100);
 
     cout << "Autor: ";
-    fgets(li[*qtd].autor, 100, stdin);
+    cin.getline(li[*qtd].autor, 100);
 
     cout << "Numero de Paginas: ";
     cin >> li[*qtd].numPag;
@@ -35,12 +40,17 @@ void Cadastrar(struct Livro li[], int *qtd){
     cin >> li[*qtd].qtdDisponivel;
 
     cout << "Nome das pessoas que estao com exemplares: ";
-    fgets(li[*qtd].pessoasComExemplares, 100, stdin);
+    cin.ignore();
+    cin.getline(li[*qtd].pessoasComExemplares, 100);
+
+    cout << "-------------------------------------------------------------\n";
 
     (*qtd)++;
 }
 
+// 2. Consulta de livros:
 void MostraLivros(struct Livro li[], int qtd){
+    system("cls");
     for (int i = 0; i < qtd; i++) {
         cout << "Titulo: " << li[i].titulo << endl;
         cout << "Autor: " << li[i].autor << endl;
@@ -49,35 +59,77 @@ void MostraLivros(struct Livro li[], int qtd){
         cout << "Codigo Unico: " << li[i].codigoUnico << endl;
         cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
         cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+        cout << "-------------------------------------------------------------\n";
     }
 }
 
 void BuscarLivro(struct Livro li[], int qtd){
+    system("cls");
+    bool encontrado = false;
     int ID = 0;
-    cout << "Digite o ID do livro: " << endl;
+    cout << "Digite o ID do livro: ";
     cin >> ID;
-    
+
     for (int i=0; i<qtd; i++){
+
         if (li[i].codigoUnico == ID){
-           cout << "Titulo: " << li[i].titulo << endl;
+            cout << "Titulo: " << li[i].titulo << endl;
             cout << "Autor: " << li[i].autor << endl;
             cout << "Numero de Paginas: " << li[i].numPag << endl;
             cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
             cout << "Codigo Unico: " << li[i].codigoUnico << endl;
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
             cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+            cout << "-------------------------------------------------------------\n";
+            bool encontrado = true;
         }
     }
+    if (encontrado) cout << "Livro nao encontrado!" << endl;
 }
+
+//3. Empréstimo de livros:
+void EmprestimoLivro(struct Livro li[], int qtd){
+    system("cls");
+    char livro[50], nome[50];
+
+    cout << "Digite seu nome: ";
+    cin.ignore();
+    cin.getline(nome, 50);
+
+    cout << "Digite o nome do livro: ";
+    cin.ignore();
+    cin.getline(livro, 50);
+
+    for (int i = 0; i < qtd; i++){
+        if (strcmp(livro,li[i].titulo) && li[i].qtdDisponivel > 0){
+                li[i].qtdDisponivel -= 1;
+            // Verifica se já há algum nome registrado e concatena
+            if (strlen(li[i].pessoasComExemplares) > 0) {
+                strcat(li[i].pessoasComExemplares, ", ");
+            }
+            strcat(li[i].pessoasComExemplares, nome);
+
+            cout << "Livro Emprestado!" << endl;
+            break;
+
+        }else {
+            cout << "Nao Possuimos este Livro!" << endl;
+            cout << "-------------------------------------------------------------\n";
+            break;
+        }
+    }
+
+}
+
 
 int main()
 {
     struct Livro li[100];
     int qtd = 0;
     int opt = 0;
-    
+
     while (opt!=6){
-        cout << "Escolha uma opcao: " << endl;
+        cout << "1.Cadastro de Livro\n2.Consulta de Livro\n3.Emprestimo de Livro\n4.Devolucao de Livro\n5.Remocao Livro\nEscolha uma opcao: ";
         cin >> opt;
 
         switch(opt){
@@ -89,7 +141,7 @@ int main()
                 int escolha = 0;
 
                 while (escolha != (1||2)) {
-                    cout << "Escolha uma opção (1/2)" << endl;
+                    cout << "Escolha uma opcao (1/2)" << endl;
                     cout << "1 - Mostrar todos os livros cadastrados" << endl;
                     cout << "2 - Mostrar livro especifico" << endl;
                     cin >> escolha;
@@ -102,8 +154,10 @@ int main()
                         break;
                     }
                 }
+                break;
             }
             case 3:{
+                EmprestimoLivro(li, qtd);
                 break;
             }
             case 4:{
