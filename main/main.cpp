@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Fillipe de Souza Faria 24020425
+// Letícia Akemi Sumida 24008474
+// Lucas de Campos Ranzani 24004942
+// Luis Gustavo Oliveira da Silva 24011554
+
 using namespace std;
 
 struct Livro {
