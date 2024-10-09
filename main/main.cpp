@@ -20,10 +20,32 @@ struct Livro {
     char pessoasComExemplares[10][100];
 };
 
+// Função que valida se o ID ja existe
+bool validaId(struct Livro li[], int qtd, int *ID){
+    bool encontrado = false;
+
+    do {
+        encontrado = false; // Resetar a flag encontrado
+
+        cout << "Digite o ID do livro: ";
+        cin >> *ID;
+
+        for (int i = 0; i < qtd; i++) {
+            if (li[i].codigoUnico == *ID) {
+                encontrado = true;
+                cout << "ID já existe. Digite outro ID." << endl;
+                break;
+            }
+        }
+    } while (encontrado);
+
+    return true; // Retornar true quando o ID digitado for único
+}
+
 // 1. Cadastro de livros:
 void Cadastrar(struct Livro li[], int *qtd){
     system("cls");
-    int codigo;
+    int codigo = 0;
     cout << "Cadastrar livros: " << endl;
 
     cout << "Titulo: ";
@@ -39,18 +61,13 @@ void Cadastrar(struct Livro li[], int *qtd){
     cout << "Ano de Publicao: ";
     cin >> li[*qtd].anoPublicacao;
 
-    cout << "codigo unico: ";
-    cin >> codigo;
-    // ERRO: a lógica ta certa nessa porra mas não funciona nem fundendo desitir precisor fazer outras coias
-    /*
-    int i = 0;
-    while (codigo == li[i].codigoUnico){
-        cout << "Codigo unico ja existente! Tente novamente\nCodigo unico: ";
-        cin >> codigo;
-        i++;
+    if (*qtd == 0){
+        cout << "Digite o ID do livro:";
+        cin >> li[*qtd].codigoUnico;;
+    }else{
+        if (validaId(li, *qtd, &codigo)) li[*qtd].codigoUnico = codigo;
     }
-    */
-    li[*qtd].codigoUnico = codigo;
+
 
     cout << "Quantidade disponivel: ";
     cin >> li[*qtd].qtdDisponivel;
