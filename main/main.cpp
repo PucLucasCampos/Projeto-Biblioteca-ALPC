@@ -63,7 +63,7 @@ void MostraLivros(struct Livro li[], int qtd){
     }
 }
 
-void BuscarLivro(struct Livro li[], int qtd){
+void BuscarLivroID(struct Livro li[], int qtd){
     system("cls");
     bool encontrado = false;
     int ID = 0;
@@ -81,10 +81,33 @@ void BuscarLivro(struct Livro li[], int qtd){
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
             cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
             cout << "-------------------------------------------------------------\n";
-            bool encontrado = true;
+            encontrado = true;
         }
     }
-    if (encontrado) cout << "Livro nao encontrado!" << endl;
+    if (encontrado == false) cout << "Livro nao encontrado!" << endl;
+}
+
+void BuscarLivroAutor(struct Livro li[], int qtd){
+    system("cls");
+    bool encontrado = false;
+    char titulo[100];
+    cout << "Digite o título do livro: ";
+    cin >> titulo;
+
+    for (int i=0; i<qtd; i++){
+        if (li[i].titulo == titulo){
+            cout << "Titulo: " << li[i].titulo << endl;
+            cout << "Autor: " << li[i].autor << endl;
+            cout << "Numero de Paginas: " << li[i].numPag << endl;
+            cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
+            cout << "Codigo Unico: " << li[i].codigoUnico << endl;
+            cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
+            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+            cout << "-------------------------------------------------------------\n";
+            encontrado = true;
+        }
+    }
+    if (encontrado == false) cout << "Livro nao encontrado!" << endl;
 }
 
 //3. Empréstimo de livros:
@@ -140,17 +163,21 @@ int main()
             case 2:{
                 int escolha = 0;
 
-                while (escolha != (1||2)) {
+                while (escolha != (1||2||3)) {
                     cout << "Escolha uma opcao (1/2)" << endl;
                     cout << "1 - Mostrar todos os livros cadastrados" << endl;
-                    cout << "2 - Mostrar livro especifico" << endl;
+                    cout << "2 - Buscar livro por ID" << endl;
+                    cout << "3 - Buscar livro por título" << endl;
                     cin >> escolha;
 
                     if (escolha == 1) {
                         MostraLivros(li, qtd);
                         break;
                     } else if (escolha == 2) {
-                        BuscarLivro(li, qtd);
+                        BuscarLivroID(li, qtd);
+                        break;
+                    }else if (escolha == 3){
+                        BuscarLivroAutor(li, qtd);
                         break;
                     }
                 }
