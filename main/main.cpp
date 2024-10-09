@@ -18,13 +18,36 @@ struct Livro
     int anoPublicacao;
     int codigoUnico;
     int qtdDisponivel;
-    char pessoasComExemplares[100];
+    int qtdEmprestada;
+    char pessoasComExemplares[10][100];
 };
 
+// Função que valida se o ID ja existe
+bool validaId(struct Livro li[], int qtd, int *ID){
+    bool encontrado = false;
+
+    do {
+        encontrado = false; // Resetar a flag encontrado
+
+        cout << "Digite o ID do livro: ";
+        cin >> *ID;
+
+        for (int i = 0; i < qtd; i++) {
+            if (li[i].codigoUnico == *ID) {
+                encontrado = true;
+                cout << "ID já existe. Digite outro ID." << endl;
+                break;
+            }
+        }
+    } while (encontrado);
+
+    return true; // Retornar true quando o ID digitado for único
+}
+
 // 1. Cadastro de livros:
-void Cadastrar(struct Livro li[], int *qtd)
-{
+void Cadastrar(struct Livro li[], int *qtd){
     system("cls");
+    int codigo = 0;
     cout << "Cadastrar livros: " << endl;
 
     cout << "Titulo: ";
@@ -40,20 +63,22 @@ void Cadastrar(struct Livro li[], int *qtd)
     cout << "Ano de Publicao: ";
     cin >> li[*qtd].anoPublicacao;
 
-    cout << "codigo unico: ";
-    cin >> li[*qtd].codigoUnico;
+    if (*qtd == 0){
+        cout << "Digite o ID do livro:";
+        cin >> li[*qtd].codigoUnico;;
+    }else{
+        if (validaId(li, *qtd, &codigo)) li[*qtd].codigoUnico = codigo;
+    }
+
 
     cout << "Quantidade disponivel: ";
     cin >> li[*qtd].qtdDisponivel;
-
-    cout << "Nome das pessoas que estao com exemplares: ";
-    cin.ignore();
-    cin.getline(li[*qtd].pessoasComExemplares, 100);
 
     cout << "-------------------------------------------------------------\n";
 
     (*qtd)++;
 }
+
 
 // 2. Consulta de livros:
 void MostraLivros(struct Livro li[], int qtd)
@@ -67,7 +92,10 @@ void MostraLivros(struct Livro li[], int qtd)
         cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
         cout << "Codigo Unico: " << li[i].codigoUnico << endl;
         cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-        cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+        for (int j = 0; j < qtd; j++) {
+            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+            break;
+        }
         cout << "-------------------------------------------------------------\n";
     }
 }
@@ -91,9 +119,13 @@ void BuscarLivro(struct Livro li[], int qtd)
             cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
             cout << "Codigo Unico: " << li[i].codigoUnico << endl;
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares << endl;
+            for (int j = 0; j < qtd; j++) {
+               cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+               break;
+            }
             cout << "-------------------------------------------------------------\n";
             bool encontrado = true;
+            return;
         }
     }
     if (encontrado)
@@ -114,18 +146,17 @@ void EmprestimoLivro(struct Livro li[], int qtd)
     cin.ignore();
     cin.getline(livro, 50);
 
-    for (int i = 0; i < qtd; i++)
-    {
-        if (strcmp(livro, li[i].titulo) && li[i].qtdDisponivel > 0)
-        {
+    for (int i = 0; i < qtd; i++){
+        if (strcmp(livro, li[i].titulo) && li[i].qtdDisponivel > 0){
             li[i].qtdDisponivel -= 1;
+            li[i].qtdEmprestada += 1;
             // Verifica se já há algum nome registrado e concatena
-            if (strlen(li[i].pessoasComExemplares) > 0)
-            {
-                strcat(li[i].pessoasComExemplares, ", ");
+            for (int j = 0; j < qtd; j++){
+                if (strlen(li[i].pessoasComExemplares[j]) > 0) {
+                    strcat(li[i].pessoasComExemplares[j], ", ");
+                }
+                strcat(li[i].pessoasComExemplares[j], nome);
             }
-            strcat(li[i].pessoasComExemplares, nome);
-
             cout << "Livro Emprestado!" << endl;
             break;
         }
