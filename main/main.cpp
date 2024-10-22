@@ -169,6 +169,52 @@ void EmprestimoLivro(struct Livro li[], int qtd)
     }
 }
 
+// 4. Devolução de livros
+void DevolverLivro (struct Livro li[], int qtd){
+    system("cls");
+    
+    bool pEncontrado = false;
+    bool liEncontrado = false;
+    char livro[50], nome[50];
+    
+    cout << "Digite o nome do livro devolvido: ";
+    cin.ignore();
+    cin.getline(livro, 50);
+    
+    for (int i = 0; i < qtd; i++){
+        if (strcmp(livro, li[i].titulo) == 0){
+            cout << "Livro encontrado!" << endl;
+            liEncontrado = true;
+            
+            cout << "Digite o nome de quem o devolveu: ";
+            cin.ignore();
+            cin.getline(nome, 50);
+            
+            for (int j = 0; j < 10; j++){
+                if (strcmp(nome, li[i].pessoasComExemplares[j]) == 0) {
+                    cout << "Pessoa encontrada!" <<endl;
+                    pEncontrado = true;
+                    
+                    strcpy(li[i].pessoasComExemplares[j], "");
+                    li[i].qtdDisponivel += 1;
+                    li[i].qtdEmprestada -= 1;
+                    cout << "Livro devolvido com sucesso!"<< endl;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    
+    if (liEncontrado == true){
+        if (pEncontrado == false){
+            cout << "Nome não encontrado, tente novamente!";
+        }
+    }else{
+        cout<<"Livro não encontrado, tente novamente!"; 
+    }
+    
+}
 // 5. Remoção de livros:
 void RemoverLivro(struct Livro li[], int *qtd)
 {
@@ -266,6 +312,7 @@ int main()
         }
         case 4:
         {
+            DevolverLivro(li, qtd);
             break;
         }
         case 5:
