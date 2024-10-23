@@ -187,19 +187,21 @@ void DevolverLivro (struct Livro li[], int qtd){
             liEncontrado = true;
             
             cout << "Digite o nome de quem o devolveu: ";
-            cin.ignore();
+            cin.ignore(0);
             cin.getline(nome, 50);
             
-            for (int j = 0; j < 10; j++){
-                if (strcmp(nome, li[i].pessoasComExemplares[j]) == 0) {
-                    cout << "Pessoa encontrada!" <<endl;
-                    pEncontrado = true;
-                    
-                    strcpy(li[i].pessoasComExemplares[j], "");
-                    li[i].qtdDisponivel += 1;
-                    li[i].qtdEmprestada -= 1;
-                    cout << "Livro devolvido com sucesso!"<< endl;
-                    break;
+            if(strlen(nome) != 0){
+                for (int j = 0; j < 10; j++){
+                    if (strcmp(nome, li[i].pessoasComExemplares[j]) == 0) {
+                        cout << "Pessoa encontrada!" <<endl;
+                        pEncontrado = true;
+                        
+                        strcpy(li[i].pessoasComExemplares[j], "");
+                        li[i].qtdDisponivel += 1;
+                        li[i].qtdEmprestada -= 1;
+                        cout << "Livro devolvido com sucesso!"<< endl;
+                        break;
+                    }
                 }
             }
             break;
