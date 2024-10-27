@@ -92,11 +92,17 @@ void MostraLivros(struct Livro li[], int qtd)
         cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
         cout << "Codigo Unico: " << li[i].codigoUnico << endl;
         cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-        for (int j = 0; j < qtd; j++) {
-            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-            break;
+        cout << "Pessoas com Exemplares: " << endl;
+        for (int j = 0; j < 10; j++) {
+            if(strlen(li[i].pessoasComExemplares[j]) != 0){
+                cout << li[i].pessoasComExemplares[j] << ", ";
+            }
+            //ele tava verificando só a primeira pessoa com exemplar,
+            //pois o break fazia ele sair da for antes de passar por todas as pessoas
+            //cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+            //break;
         }
-        cout << "-------------------------------------------------------------\n";
+        cout << "\n-------------------------------------------------------------\n";
     }
 }
 
@@ -119,16 +125,24 @@ void BuscarLivro(struct Livro li[], int qtd)
             cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
             cout << "Codigo Unico: " << li[i].codigoUnico << endl;
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-            for (int j = 0; j < qtd; j++) {
-               cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-               break;
+            for (int j = 0; j < 10; j++) {
+                if(strlen(li[i].pessoasComExemplares[j]) != 0){
+                    cout << li[i].pessoasComExemplares[j] << ", ";
+                }
+                //ele tava verificando só a primeira pessoa com exemplar,
+                //pois o break fazia ele sair da for antes de passar por todas as pessoas
+                //cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+                //break;
             }
-            cout << "-------------------------------------------------------------\n";
+            cout << "\n-------------------------------------------------------------\n";
             bool encontrado = true;
             return;
         }
     }
-    if (encontrado)
+    //com o if encontrado, ele falaria que o livro não foi encontrado se fosse encontrado
+    //o !encontrado faz com que ele mostre a mensagem só se o livro não foi encontrado
+    //if(encontrado)
+    if (!encontrado)
         cout << "Livro nao encontrado!" << endl;
 }
 
@@ -136,37 +150,56 @@ void BuscarLivro(struct Livro li[], int qtd)
 void EmprestimoLivro(struct Livro li[], int qtd)
 {
     system("cls");
-    char livro[50], nome[50];
+    char livro[100], nome[100];
 
     cout << "Digite seu nome: ";
     cin.ignore();
-    cin.getline(nome, 50);
+    cin.getline(nome, 100);
 
     cout << "Digite o nome do livro: ";
-    cin.ignore();
-    cin.getline(livro, 50);
+    //o cin.ignore() nesse caso ignora o primeiro caractere, por isso precisa usar o cin.ignore(0)
+    //cin.ignore()
+    cin.ignore(0);
+    cin.getline(livro, 100);
 
     for (int i = 0; i < qtd; i++){
-        if (strcmp(livro, li[i].titulo) && li[i].qtdDisponivel > 0){
+        // o código strcmp(livro, li[i].titulo) precisa ser comparado com 0, pois é assim que se verifica que as strings são iguais
+        if (strcmp(livro, li[i].titulo) == 0 && li[i].qtdDisponivel > 0){
             li[i].qtdDisponivel -= 1;
             li[i].qtdEmprestada += 1;
             // Verifica se já há algum nome registrado e concatena
-            for (int j = 0; j < qtd; j++){
-                if (strlen(li[i].pessoasComExemplares[j]) > 0) {
+            // a var qtd é a quantidade de livros, não de pessoas
+            //for (int j = 0; j < qtd; j++){
+            // usei 10 porque é o valor máximo de pessoas com exemplares
+            for (int j = 0; j < 10; j++){
+                // não concatena em matriz de vários valores
+                /*if (strlen(li[i].pessoasComExemplares[j]) > 0) {
                     strcat(li[i].pessoasComExemplares[j], ", ");
+                }*/
+                //linha para acompanhar as pessoas com exemplares (usado para teste)
+                //cout << "pessoa " << j << ":" << li[i].pessoasComExemplares[j] << endl;
+                if(strlen(li[i].pessoasComExemplares[j]) == 0){
+                    strcpy(li[i].pessoasComExemplares[j], nome);
+                    break;
                 }
-                strcat(li[i].pessoasComExemplares[j], nome);
             }
             cout << "Livro Emprestado!" << endl;
-            break;
+            return;
+            //usa o return pra parar a função aqui
+            //break;
         }
-        else
+        //esse else não faz sentido dentro de um loop, pois quebra na primeira verificação o loop pelo break
+        /*else
         {
             cout << "Nao Possuimos este Livro!" << endl;
             cout << "-------------------------------------------------------------\n";
             break;
-        }
+        }*/
     }
+    
+    cout << "Nao Possuimos este Livro!" << endl;
+    cout << "-------------------------------------------------------------\n";
+    return;
 }
 
 // 4. Devolução de livros
@@ -175,11 +208,11 @@ void DevolverLivro (struct Livro li[], int qtd){
     
     bool pEncontrado = false;
     bool liEncontrado = false;
-    char livro[50], nome[50];
+    char livro[100], nome[100];
     
     cout << "Digite o nome do livro devolvido: ";
     cin.ignore();
-    cin.getline(livro, 50);
+    cin.getline(livro, 100);
     
     for (int i = 0; i < qtd; i++){
         if (strcmp(livro, li[i].titulo) == 0){
@@ -188,7 +221,7 @@ void DevolverLivro (struct Livro li[], int qtd){
             
             cout << "Digite o nome de quem o devolveu: ";
             cin.ignore(0);
-            cin.getline(nome, 50);
+            cin.getline(nome, 100);
             
             if(strlen(nome) != 0){
                 for (int j = 0; j < 10; j++){
@@ -226,39 +259,41 @@ void RemoverLivro(struct Livro li[], int *qtd)
     int indexLi = 0;
     bool encontrado = false;
 
-    while (!encontrado)
+    //o while(!encontrado) não fazia sentido, pois ele sempre ou ia encontrar ou não encontrar o livro
+    //além disso tinha um if(!encontrado) com um break, e fazia o while nem ter efeito
+
+    cout << "Digite o ID do livro:";
+    cin >> ID;
+
+    //essa parte tá certa e pega qual é o livro que vai ser apagado
+    for (int i = 0; i < *qtd; i++)
     {
-        cout << "Digite o ID do livro:";
-        cin >> ID;
-
-        for (int i = 0; i < *qtd; i++)
+        if (li[i].codigoUnico == ID)
         {
-            if (li[i].codigoUnico == ID)
-            {
-                indexLi = i;
-                encontrado = true;
-                break;
-            }
-        }
-
-        if (!encontrado)
-        {
-            cout << "Nao foi possivel encontrar o livro!" << endl;
-            cout << "-------------------------------------------------------------\n";
+            indexLi = i;
+            encontrado = true;
             break;
         }
     }
 
+    if (!encontrado)
+    {
+        cout << "Nao foi possivel encontrar o livro!" << endl;
+        cout << "-------------------------------------------------------------\n";
+    }
+    
     if (encontrado)
     {
-        for (int i = 0; i < *qtd; i++)
+        //for (int i = 0; i < *qtd; i++) invés de começar o i = 0, é melhor começar no i com o valor do livro a ser apagado
+        //o que acontece nesse caso é que ele pega todos os livros cadastrados depois do que vai ser apagado
+        //e atualiza as linhas da matriz pra acompanhar o que foi apagado
+        for (int i = indexLi; i < *qtd; i++)
         {
-            if (i == indexLi)
-            {
-                li[i] = li[i + 1];
-                (*qtd)--;
-            }
+            //if (i == indexLi) esse if fazia ele puxar só o livro da frente do que foi apagado, agora ele puxa todos os que estariam na frente, acompanhando a qtd
+            li[i] = li[i + 1];
         }
+        //a quantidade de livros só é diminuida depois de mover todos os livros para as linhas atualizadas
+        (*qtd)--;
 
         cout << "Livro removido" << endl;
         cout << "-------------------------------------------------------------\n";
