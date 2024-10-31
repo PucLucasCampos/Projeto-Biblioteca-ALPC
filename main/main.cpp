@@ -27,7 +27,7 @@ bool validaId(struct Livro li[], int qtd, int *ID){
     bool encontrado = false;
 
     do {
-        encontrado = false; // Resetar a flag encontrado
+        encontrado = false;
 
         cout << "Digite o ID do livro: ";
         cin >> *ID;
@@ -41,7 +41,7 @@ bool validaId(struct Livro li[], int qtd, int *ID){
         }
     } while (encontrado);
 
-    return true; // Retornar true quando o ID digitado for único
+    return true;
 }
 
 // 1. Cadastro de livros:
@@ -92,15 +92,18 @@ void MostraLivros(struct Livro li[], int qtd)
         cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
         cout << "Codigo Unico: " << li[i].codigoUnico << endl;
         cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-        for (int j = 0; j < qtd; j++) {
-            cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-            break;
+        cout << "Pessoas com Exemplares: " << endl;
+        for (int j = 0; j < 10; j++) {
+            if(strlen(li[i].pessoasComExemplares[j]) != 0){
+                cout << li[i].pessoasComExemplares[j] << ", ";
+            }
         }
-        cout << "-------------------------------------------------------------\n";
+        cout << "\n-------------------------------------------------------------\n";
     }
 }
 
-void BuscarLivroID(struct Livro li[], int qtd)
+// 2.1 Consulta de livros por ID:
+void BuscarLivroId(struct Livro li[], int qtd)
 {
     system("cls");
     bool encontrado = false;
@@ -119,19 +122,22 @@ void BuscarLivroID(struct Livro li[], int qtd)
             cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
             cout << "Codigo Unico: " << li[i].codigoUnico << endl;
             cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
-            for (int j = 0; j < qtd; j++) {
-               cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-               break;
+            for (int j = 0; j < 10; j++) {
+                if(strlen(li[i].pessoasComExemplares[j]) != 0){
+                    cout << li[i].pessoasComExemplares[j] << ", ";
+                }
             }
-            cout << "-------------------------------------------------------------\n";
+            cout << "\n-------------------------------------------------------------\n";
             bool encontrado = true;
             return;
         }
     }
-    if (encontrado)
+
+    if (!encontrado)
         cout << "Livro nao encontrado!" << endl;
 }
 
+// 2.2 Consulta de livros pelo Titulo:
 void BuscarLivroAutor(struct Livro li[], int qtd){
     system("cls");
     bool encontrado = false;
@@ -164,39 +170,86 @@ void BuscarLivroAutor(struct Livro li[], int qtd){
 void EmprestimoLivro(struct Livro li[], int qtd)
 {
     system("cls");
-    char livro[50], nome[50];
+    char livro[100], nome[100];
 
     cout << "Digite seu nome: ";
     cin.ignore();
-    cin.getline(nome, 50);
+    cin.getline(nome, 100);
 
     cout << "Digite o nome do livro: ";
-    cin.ignore();
-    cin.getline(livro, 50);
+
+    cin.ignore(0);
+    cin.getline(livro, 100);
 
     for (int i = 0; i < qtd; i++){
-        if (strcmp(livro, li[i].titulo) && li[i].qtdDisponivel > 0){
+        if (strcmp(livro, li[i].titulo) == 0 && li[i].qtdDisponivel > 0){
             li[i].qtdDisponivel -= 1;
             li[i].qtdEmprestada += 1;
-            // Verifica se já há algum nome registrado e concatena
-            for (int j = 0; j < qtd; j++){
-                if (strlen(li[i].pessoasComExemplares[j]) > 0) {
-                    strcat(li[i].pessoasComExemplares[j], ", ");
+
+            for (int j = 0; j < 10; j++){
+                if(strlen(li[i].pessoasComExemplares[j]) == 0){
+                    strcpy(li[i].pessoasComExemplares[j], nome);
+                    break;
                 }
-                strcat(li[i].pessoasComExemplares[j], nome);
             }
             cout << "Livro Emprestado!" << endl;
-            break;
+            return;
         }
-        else
-        {
-            cout << "Nao Possuimos este Livro!" << endl;
-            cout << "-------------------------------------------------------------\n";
+    }
+    
+    cout << "Nao Possuimos este Livro!" << endl;
+    cout << "-------------------------------------------------------------\n";
+    return;
+}
+
+// 4. Devolução de livros
+void DevolverLivro (struct Livro li[], int qtd){
+    system("cls");
+    
+    bool pEncontrado = false;
+    bool liEncontrado = false;
+    char livro[100], nome[100];
+    
+    cout << "Digite o nome do livro devolvido: ";
+    cin.ignore();
+    cin.getline(livro, 100);
+    
+    for (int i = 0; i < qtd; i++){
+        if (strcmp(livro, li[i].titulo) == 0){
+            cout << "Livro encontrado!" << endl;
+            liEncontrado = true;
+            
+            cout << "Digite o nome de quem o devolveu: ";
+            cin.ignore(0);
+            cin.getline(nome, 100);
+            
+            if(strlen(nome) != 0){
+                for (int j = 0; j < 10; j++){
+                    if (strcmp(nome, li[i].pessoasComExemplares[j]) == 0) {
+                        cout << "Pessoa encontrada!" <<endl;
+                        pEncontrado = true;
+                        
+                        strcpy(li[i].pessoasComExemplares[j], "");
+                        li[i].qtdDisponivel += 1;
+                        li[i].qtdEmprestada -= 1;
+                        cout << "Livro devolvido com sucesso!"<< endl;
+                        break;
+                    }
+                }
+            }
             break;
         }
     }
+    
+    if (liEncontrado == true){
+        if (pEncontrado == false){
+            cout << "Nome não encontrado, tente novamente!";
+        }
+    }else{
+        cout<<"Livro não encontrado, tente novamente!"; 
+    }
+    
 }
-
 // 5. Remoção de livros:
 void RemoverLivro(struct Livro li[], int *qtd)
 {
@@ -206,39 +259,32 @@ void RemoverLivro(struct Livro li[], int *qtd)
     int indexLi = 0;
     bool encontrado = false;
 
-    while (!encontrado)
+    cout << "Digite o ID do livro:";
+    cin >> ID;
+
+    for (int i = 0; i < *qtd; i++)
     {
-        cout << "Digite o ID do livro:";
-        cin >> ID;
-
-        for (int i = 0; i < *qtd; i++)
+        if (li[i].codigoUnico == ID)
         {
-            if (li[i].codigoUnico == ID)
-            {
-                indexLi = i;
-                encontrado = true;
-                break;
-            }
-        }
-
-        if (!encontrado)
-        {
-            cout << "Nao foi possivel encontrar o livro!" << endl;
-            cout << "-------------------------------------------------------------\n";
+            indexLi = i;
+            encontrado = true;
             break;
         }
     }
 
+    if (!encontrado)
+    {
+        cout << "Nao foi possivel encontrar o livro!" << endl;
+        cout << "-------------------------------------------------------------\n";
+    }
+    
     if (encontrado)
     {
-        for (int i = 0; i < *qtd; i++)
+        for (int i = indexLi; i < *qtd; i++)
         {
-            if (i == indexLi)
-            {
-                li[i] = li[i + 1];
-                (*qtd)--;
-            }
+            li[i] = li[i + 1];
         }
+        (*qtd)--;
 
         cout << "Livro removido" << endl;
         cout << "-------------------------------------------------------------\n";
@@ -270,21 +316,25 @@ int main()
             while (escolha != (1 || 2 || 3))
             {
                 cout << "Escolha uma opcao (1/2)" << endl;
-                    cout << "1 - Mostrar todos os livros cadastrados" << endl;
-                    cout << "2 - Buscar livro por ID" << endl;
-                    cout << "3 - Buscar livro por título" << endl;
-                    cin >> escolha;
+                cout << "1 - Mostrar todos os livros cadastrados" << endl;
+                cout << "2 - Mostrar livro especifico" << endl;
+                cout << "3 - Buscar livro por titulo" << endl;
+                cin >> escolha;
 
-                    if (escolha == 1) {
-                        MostraLivros(li, qtd);
-                        break;
-                    } else if (escolha == 2) {
-                        BuscarLivroID(li, qtd);
-                        break;
-                    }else if (escolha == 3){
-                        BuscarLivroAutor(li, qtd);
-                        break;
-                    }
+                if (escolha == 1)
+                {
+                    MostraLivros(li, qtd);
+                    break;
+                }
+                else if (escolha == 2)
+                {
+                    BuscarLivroId(li, qtd);
+                    break;
+                }else if (escolha == 3)
+                {
+                    BuscarLivroAutor(li, qtd);
+                    break;
+                }
             }
             break;
         }
@@ -295,6 +345,7 @@ int main()
         }
         case 4:
         {
+            DevolverLivro(li, qtd);
             break;
         }
         case 5:
