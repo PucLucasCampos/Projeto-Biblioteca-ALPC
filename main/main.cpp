@@ -27,7 +27,7 @@ bool validaId(struct Livro li[], int qtd, int *ID){
     bool encontrado = false;
 
     do {
-        encontrado = false; // Resetar a flag encontrado
+        encontrado = false;
 
         cout << "Digite o ID do livro: ";
         cin >> *ID;
@@ -41,7 +41,7 @@ bool validaId(struct Livro li[], int qtd, int *ID){
         }
     } while (encontrado);
 
-    return true; // Retornar true quando o ID digitado for único
+    return true;
 }
 
 // 1. Cadastro de livros:
@@ -97,16 +97,13 @@ void MostraLivros(struct Livro li[], int qtd)
             if(strlen(li[i].pessoasComExemplares[j]) != 0){
                 cout << li[i].pessoasComExemplares[j] << ", ";
             }
-            //ele tava verificando só a primeira pessoa com exemplar,
-            //pois o break fazia ele sair da for antes de passar por todas as pessoas
-            //cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-            //break;
         }
         cout << "\n-------------------------------------------------------------\n";
     }
 }
 
-void BuscarLivro(struct Livro li[], int qtd)
+// 2.1 Consulta de livros por ID:
+void BuscarLivroId(struct Livro li[], int qtd)
 {
     system("cls");
     bool encontrado = false;
@@ -129,21 +126,44 @@ void BuscarLivro(struct Livro li[], int qtd)
                 if(strlen(li[i].pessoasComExemplares[j]) != 0){
                     cout << li[i].pessoasComExemplares[j] << ", ";
                 }
-                //ele tava verificando só a primeira pessoa com exemplar,
-                //pois o break fazia ele sair da for antes de passar por todas as pessoas
-                //cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
-                //break;
             }
             cout << "\n-------------------------------------------------------------\n";
             bool encontrado = true;
             return;
         }
     }
-    //com o if encontrado, ele falaria que o livro não foi encontrado se fosse encontrado
-    //o !encontrado faz com que ele mostre a mensagem só se o livro não foi encontrado
-    //if(encontrado)
+
     if (!encontrado)
         cout << "Livro nao encontrado!" << endl;
+}
+
+// 2.2 Consulta de livros pelo Titulo:
+void BuscarLivroAutor(struct Livro li[], int qtd){
+    system("cls");
+    bool encontrado = false;
+    char titulo[100];
+    cout << "Digite o título do livro: ";
+    cin.ignore();
+    cin.getline(titulo, 100);
+
+    for (int i=0; i<qtd; i++){
+        if (strcmp(titulo, li[i].titulo) == 0){
+            cout << "Titulo: " << li[i].titulo << endl;
+            cout << "Autor: " << li[i].autor << endl;
+            cout << "Numero de Paginas: " << li[i].numPag << endl;
+            cout << "Ano de Publicacao: " << li[i].anoPublicacao << endl;
+            cout << "Codigo Unico: " << li[i].codigoUnico << endl;
+            cout << "Quantidade Disponivel: " << li[i].qtdDisponivel << endl;
+            for (int j = 0; j < qtd; j++) {
+               cout << "Pessoas com Exemplares: " << li[i].pessoasComExemplares[j] << endl;
+               break;
+            }
+            cout << "-------------------------------------------------------------\n";
+            bool encontrado = true;
+            return;
+        }
+    }
+    if (encontrado == false) cout << "Livro nao encontrado!" << endl;
 }
 
 // 3. Empréstimo de livros:
@@ -157,27 +177,16 @@ void EmprestimoLivro(struct Livro li[], int qtd)
     cin.getline(nome, 100);
 
     cout << "Digite o nome do livro: ";
-    //o cin.ignore() nesse caso ignora o primeiro caractere, por isso precisa usar o cin.ignore(0)
-    //cin.ignore()
+
     cin.ignore(0);
     cin.getline(livro, 100);
 
     for (int i = 0; i < qtd; i++){
-        // o código strcmp(livro, li[i].titulo) precisa ser comparado com 0, pois é assim que se verifica que as strings são iguais
         if (strcmp(livro, li[i].titulo) == 0 && li[i].qtdDisponivel > 0){
             li[i].qtdDisponivel -= 1;
             li[i].qtdEmprestada += 1;
-            // Verifica se já há algum nome registrado e concatena
-            // a var qtd é a quantidade de livros, não de pessoas
-            //for (int j = 0; j < qtd; j++){
-            // usei 10 porque é o valor máximo de pessoas com exemplares
+
             for (int j = 0; j < 10; j++){
-                // não concatena em matriz de vários valores
-                /*if (strlen(li[i].pessoasComExemplares[j]) > 0) {
-                    strcat(li[i].pessoasComExemplares[j], ", ");
-                }*/
-                //linha para acompanhar as pessoas com exemplares (usado para teste)
-                //cout << "pessoa " << j << ":" << li[i].pessoasComExemplares[j] << endl;
                 if(strlen(li[i].pessoasComExemplares[j]) == 0){
                     strcpy(li[i].pessoasComExemplares[j], nome);
                     break;
@@ -185,16 +194,7 @@ void EmprestimoLivro(struct Livro li[], int qtd)
             }
             cout << "Livro Emprestado!" << endl;
             return;
-            //usa o return pra parar a função aqui
-            //break;
         }
-        //esse else não faz sentido dentro de um loop, pois quebra na primeira verificação o loop pelo break
-        /*else
-        {
-            cout << "Nao Possuimos este Livro!" << endl;
-            cout << "-------------------------------------------------------------\n";
-            break;
-        }*/
     }
     
     cout << "Nao Possuimos este Livro!" << endl;
@@ -259,13 +259,9 @@ void RemoverLivro(struct Livro li[], int *qtd)
     int indexLi = 0;
     bool encontrado = false;
 
-    //o while(!encontrado) não fazia sentido, pois ele sempre ou ia encontrar ou não encontrar o livro
-    //além disso tinha um if(!encontrado) com um break, e fazia o while nem ter efeito
-
     cout << "Digite o ID do livro:";
     cin >> ID;
 
-    //essa parte tá certa e pega qual é o livro que vai ser apagado
     for (int i = 0; i < *qtd; i++)
     {
         if (li[i].codigoUnico == ID)
@@ -284,15 +280,10 @@ void RemoverLivro(struct Livro li[], int *qtd)
     
     if (encontrado)
     {
-        //for (int i = 0; i < *qtd; i++) invés de começar o i = 0, é melhor começar no i com o valor do livro a ser apagado
-        //o que acontece nesse caso é que ele pega todos os livros cadastrados depois do que vai ser apagado
-        //e atualiza as linhas da matriz pra acompanhar o que foi apagado
         for (int i = indexLi; i < *qtd; i++)
         {
-            //if (i == indexLi) esse if fazia ele puxar só o livro da frente do que foi apagado, agora ele puxa todos os que estariam na frente, acompanhando a qtd
             li[i] = li[i + 1];
         }
-        //a quantidade de livros só é diminuida depois de mover todos os livros para as linhas atualizadas
         (*qtd)--;
 
         cout << "Livro removido" << endl;
@@ -322,11 +313,12 @@ int main()
         {
             int escolha = 0;
 
-            while (escolha != (1 || 2))
+            while (escolha != (1 || 2 || 3))
             {
                 cout << "Escolha uma opcao (1/2)" << endl;
                 cout << "1 - Mostrar todos os livros cadastrados" << endl;
                 cout << "2 - Mostrar livro especifico" << endl;
+                cout << "3 - Buscar livro por título" << endl;
                 cin >> escolha;
 
                 if (escolha == 1)
@@ -336,7 +328,11 @@ int main()
                 }
                 else if (escolha == 2)
                 {
-                    BuscarLivro(li, qtd);
+                    BuscarLivroId(li, qtd);
+                    break;
+                }else if (escolha == 3)
+                {
+                    BuscarLivroAutor(li, qtd);
                     break;
                 }
             }
